@@ -12,12 +12,12 @@ func NewRouter() *gin.Engine {
 	router.Use(gin.Recovery())
 
 	health := new(controller.HealthController)
+	signUp := new(controller.SignUpController)
 	// edinet := new(controller.EdinetController)
-	// edinetMaintain := new(controller.MaintainEdinetCompanyController)
 
 	router.GET("/health_check", health.Status)
+	router.POST("/api/sign_up", signUp.POST)
 	// router.GET("/edinet/extract_statement", edinet.GET)
-	// router.POST("/edinet/maintain_company", edinetMaintain.POST)
 
 	return router
 }
