@@ -9,6 +9,11 @@ import (
 	_ "github.com/lib/pq"
 )
 
+type SignUpRequest struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
 type SignUpController struct {}
 
 func (s SignUpController) POST(c *gin.Context) {
@@ -16,9 +21,14 @@ func (s SignUpController) POST(c *gin.Context) {
 	if err != nil {
 		log.Fatalln("failed to connect to database", err)
 	}
+	var request SignUpRequest
+	c.BindJSON(&request)
+	log.Println(request.Username)
+	log.Println(request.Password)
+
 	defer db.Close()
 	var user = model.User{Username: "test", Password: "test_password"}
-	println(err)
+	log.Println("aaa", c)
 
 	db.Create(&user)
 	db.Save(&user)

@@ -14,6 +14,7 @@ ENV GO111MODULE=on
 RUN go get -u github.com/cosmtrek/air
 # delveのインストール
 RUN go get -u github.com/go-delve/delve/cmd/dlv
+RUN go get golang.org/x/tools/gopls
 
 CMD air -c air.toml
 

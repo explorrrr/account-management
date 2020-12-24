@@ -1,18 +1,32 @@
-package domain
+package repository
 
-type UserRepository interface {
-	CreateUser(ctx context.Context, user *model.User) (*model.User, error)
-	Find(ctx context.Context, userID int) (*model.User, error)
+import (
+	"context"
+	"account-management/root/model"
+	"account-management/root/database"
+)
+
+type UserRepositoryInterface interface {
+	Create(ctx context.Context, user *model.User) error
+	// Find(ctx context.Context, id int) (bool, error)
 }
 
 type UserRepository struct {
-	db sql.DB
+	postgresqlinterface database.PostgresqlInterface
 }
 
-func NewUserRepository(db *sql.DB) UserRepository {
-	return &userRepository{*db}
+func NewUserRepository(postgresqlinterface database.PostgresqlInterface) UserRepositoryInterface {
+	return &UserRepository{postgresqlinterface: postgresqlinterface}
 }
 
-func (ur *userRepository) CreateUser(ctx context.Context, user *model.User) {
-	ur.db.Query("")
+func (UserRepository *UserRepository) Create(ctx context.Context, user model.User) (*model.User, error) {
+	dbConn := UserRepository.postgresqlinterface.NewClientConnection()
+	defer dbConn.Close()
+
+	d := dbConn.Create(&user)
+	if d.Error != nil {
+		return nil, d.Error
+	}
+
+	return &user, nil
 }
