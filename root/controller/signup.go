@@ -1,12 +1,9 @@
 package controller
 
 import (
-	"log"
 	"github.com/gin-gonic/gin"
-	"github.com/jinzhu/gorm"
 	"net/http"
-	"account-management/root/model"
-	_ "github.com/lib/pq"
+	"account-management/root/domain/service"
 )
 
 type SignUpRequest struct {
@@ -16,21 +13,19 @@ type SignUpRequest struct {
 
 type SignUpController struct {}
 
-func (s SignUpController) POST(c *gin.Context) {
-	db, err := gorm.Open("postgres", "postgres://postgres:postgres@account-management-postgres:5432/account_management?sslmode=disable")
-	if err != nil {
-		log.Fatalln("failed to connect to database", err)
-	}
+func (s SignUpController) POST(ctx *gin.Context) {
+
 	var request SignUpRequest
-	c.BindJSON(&request)
-	log.Println(request.Username)
-	log.Println(request.Password)
+	ctx.BindJSON(&request)
+	username := request.Username
+	rawPassword := request.Password
 
-	defer db.Close()
-	var user = model.User{Username: "test", Password: "test_password"}
-	log.Println("aaa", c)
+	userService := service.UserService{}
+	result := userService.SignUpUser(ctx, username, rawPassword)
 
-	db.Create(&user)
-	db.Save(&user)
-	c.String(http.StatusOK, "aaa")
+	if result == false {
+		ctx.String(http.StatusOK, "user already exist, please try another username.")
+	} else {
+		ctx.String(http.StatusOK, "user create successfully")
+	}
 }

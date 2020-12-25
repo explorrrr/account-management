@@ -2,31 +2,48 @@ package repository
 
 import (
 	"context"
-	"account-management/root/model"
 	"account-management/root/database"
+	"account-management/root/model"
 )
 
 type UserRepositoryInterface interface {
-	Create(ctx context.Context, user *model.User) error
-	// Find(ctx context.Context, id int) (bool, error)
+	Create(ctx context.Context, user model.User) error
+	FindByUsername(ctx context.Context, username string) (bool, error)
 }
 
 type UserRepository struct {
-	postgresqlinterface database.PostgresqlInterface
+	postgresqlInterface database.PostgresqlInterface
 }
 
-func NewUserRepository(postgresqlinterface database.PostgresqlInterface) UserRepositoryInterface {
-	return &UserRepository{postgresqlinterface: postgresqlinterface}
+func NewUserRepository(postgresqlInterface database.PostgresqlInterface) UserRepositoryInterface {
+	return &UserRepository{postgresqlInterface: postgresqlInterface}
 }
 
-func (UserRepository *UserRepository) Create(ctx context.Context, user model.User) (*model.User, error) {
-	dbConn := UserRepository.postgresqlinterface.NewClientConnection()
+func (userRepository *UserRepository) Create(ctx context.Context, user model.User) error {
+	dbConn := userRepository.postgresqlInterface.NewClientConnection()
 	defer dbConn.Close()
 
 	d := dbConn.Create(&user)
 	if d.Error != nil {
-		return nil, d.Error
+		return d.Error
 	}
+	dbConn.Save(&user)
 
-	return &user, nil
+	return nil
+}
+
+func (userRepository *UserRepository) FindByUsername(ctx context.Context, username string) (bool, error) {
+	dbConn := userRepository.postgresqlInterface.NewClientConnection()
+	defer dbConn.Close()
+
+	var recordCount = 0
+
+	user := model.User{}
+	err := dbConn.Where("username=?", username).First(&user).Count(&recordCount).Error
+
+	if recordCount == 0 {
+		return false, err
+	} else {
+		return true, err
+	}
 }

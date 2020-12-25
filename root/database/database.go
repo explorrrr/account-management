@@ -21,7 +21,7 @@ func NewPostgresql() PostgresqlInterface {
 }
 
 func (postgresql Postgresql) NewClientConnection() *gorm.DB {
-	config := GetConfig()
+	config := config.GetConfig()
 	client, err := gorm.Open("postgres", config.GetString("database.dns"))
 
 	if err != nil {
