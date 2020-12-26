@@ -15,11 +15,13 @@ func NewRouter() *gin.Engine {
 	signUp := new(controller.SignUpController)
 	auth := new(controller.AuthController)
 	validateToken := new(controller.ValidateTokenController)
+	changePassword := new(controller.ChangePasswordController)
 
 	router.GET("/health_check", health.Status)
 	router.POST("/api/sign_up", signUp.POST)
 	router.POST("/api/auth", auth.POST)
 	router.POST("/api/validate_token", validateToken.POST)
+	router.POST("/api/change_password", changePassword.POST)
 
 	return router
 }

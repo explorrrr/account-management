@@ -10,6 +10,7 @@ type UserRepositoryInterface interface {
 	Create(ctx context.Context, user model.User) error
 	FindByUsername(ctx context.Context, username string) (bool, error)
 	GetByUsername(ctx context.Context, username string) (*model.User, error)
+	Update(ctx context.Context, username string, updateMap map[string]interface{}) error
 }
 
 type UserRepository struct {
@@ -60,4 +61,21 @@ func (userRepository *UserRepository) GetByUsername(ctx context.Context, usernam
 	} else {
 		return &user, nil
 	}
+}
+
+func (userRepository *UserRepository) Update(ctx context.Context, username string, updateMap map[string]interface{}) error {
+	dbConn := userRepository.postgresqlInterface.NewClientConnection()
+	defer dbConn.Close()
+	user := model.User{}
+	err := dbConn.Where("username=?", username).First(&user).Error
+
+	dbConn.Model(&user).Updates(updateMap)
+
+	if err != nil {
+		return err
+	} else {
+		return nil
+	}
+
+
 }

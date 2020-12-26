@@ -52,7 +52,7 @@ func(us *UserService) AuthUser(ctx context.Context, username string, rawPassword
 
 	userEntity := &entity.UserEntity{Username: user.Username, Password: user.Password}
 
-	token, err := userEntity.AuthUser(rawPassword)
+	token, err := userEntity.IssueJWT(rawPassword)
 
 	if err != nil {
 		return nil, err
@@ -68,4 +68,32 @@ func(us *UserService) ValidateToken(ctx context.Context, token string) (string, 
 	code, err := tokenEntity.Validate()
 
 	return code, err
+}
+
+func(us *UserService) ChangePassword(ctx context.Context, username string, currentPassword string, desiredPassword string) (bool, string, error) {
+	// FIXME どこでDI設定するべきか考える
+	dataStoreInterface := database.NewPostgresql()
+	us.UserRepositoryInterface = repository.NewUserRepository(dataStoreInterface)
+
+	// Userオブジェクトの取得
+	user, err := us.UserRepositoryInterface.GetByUsername(ctx, username)
+
+	if err != nil {
+		return false, "9999", err
+	}
+
+	userEntity := &entity.UserEntity{Username: user.Username, Password: user.Password}
+
+	userEntity, err = userEntity.ChangePassword(currentPassword, desiredPassword)
+
+	println(err)
+
+	if err != nil {
+		return false, "9999", err
+	}
+
+	_ = us.UserRepositoryInterface.Update(ctx, username, map[string]interface{}{"password": userEntity.Password})
+
+	return true, "0000", nil
+
 }
