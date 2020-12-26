@@ -37,3 +37,35 @@ func (us *UserService) SignUpUser(ctx context.Context, username string, rawPassw
 		return true, nil
 	}
 }
+
+func(us *UserService) AuthUser(ctx context.Context, username string, rawPassword string) (*entity.JWT, error) {
+	// FIXME どこでDI設定するべきか考える
+	dataStoreInterface := database.NewPostgresql()
+	us.UserRepositoryInterface = repository.NewUserRepository(dataStoreInterface)
+
+	// Userオブジェクトの取得
+	user, err := us.UserRepositoryInterface.GetByUsername(ctx, username)
+
+	if err != nil {
+		return nil, err
+	}
+
+	userEntity := &entity.UserEntity{Username: user.Username, Password: user.Password}
+
+	token, err := userEntity.AuthUser(rawPassword)
+
+	if err != nil {
+		return nil, err
+	}
+
+	jwt := &entity.JWT{Token: token}
+
+	return jwt, nil
+}
+
+func(us *UserService) ValidateToken(ctx context.Context, token string) (string, error) {
+	tokenEntity := &entity.JWT{Token: token}
+	code, err := tokenEntity.Validate()
+
+	return code, err
+}

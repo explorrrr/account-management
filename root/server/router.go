@@ -13,11 +13,13 @@ func NewRouter() *gin.Engine {
 
 	health := new(controller.HealthController)
 	signUp := new(controller.SignUpController)
-	// edinet := new(controller.EdinetController)
+	auth := new(controller.AuthController)
+	validateToken := new(controller.ValidateTokenController)
 
 	router.GET("/health_check", health.Status)
 	router.POST("/api/sign_up", signUp.POST)
-	// router.GET("/edinet/extract_statement", edinet.GET)
+	router.POST("/api/auth", auth.POST)
+	router.POST("/api/validate_token", validateToken.POST)
 
 	return router
 }

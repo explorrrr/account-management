@@ -9,6 +9,7 @@ import (
 type UserRepositoryInterface interface {
 	Create(ctx context.Context, user model.User) error
 	FindByUsername(ctx context.Context, username string) (bool, error)
+	GetByUsername(ctx context.Context, username string) (*model.User, error)
 }
 
 type UserRepository struct {
@@ -45,5 +46,18 @@ func (userRepository *UserRepository) FindByUsername(ctx context.Context, userna
 		return false, err
 	} else {
 		return true, err
+	}
+}
+
+func (userRepository *UserRepository) GetByUsername(ctx context.Context, username string) (*model.User, error) {
+	dbConn := userRepository.postgresqlInterface.NewClientConnection()
+	defer dbConn.Close()
+	user := model.User{}
+	err := dbConn.Where("username=?", username).First(&user).Error
+
+	if err != nil {
+		return nil, err
+	} else {
+		return &user, nil
 	}
 }
