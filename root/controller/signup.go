@@ -1,8 +1,8 @@
 package controller
 
 import (
-	"github.com/gin-gonic/gin"
 	"net/http"
+	"github.com/gin-gonic/gin"
 	"account-management/root/domain/service"
 )
 
@@ -24,8 +24,18 @@ func (s SignUpController) POST(ctx *gin.Context) {
 	_, err := userService.SignUpUser(ctx, username, rawPassword)
 
 	if err != nil {
-		ctx.String(http.StatusOK, err.Error())
+		ctx.JSON(
+			http.StatusOK,
+			gin.H{
+				"message": err.Error(),
+				"code": "9999",
+			})
 	} else {
-		ctx.String(http.StatusOK, "user create successfully")
+		ctx.JSON(
+			http.StatusOK,
+			gin.H{
+				"message": "user create successfully",
+				"code": "0000",
+			})
 	}
 }
