@@ -21,10 +21,10 @@ func (s SignUpController) POST(ctx *gin.Context) {
 	rawPassword := request.Password
 
 	userService := service.UserService{}
-	result := userService.SignUpUser(ctx, username, rawPassword)
+	_, err := userService.SignUpUser(ctx, username, rawPassword)
 
-	if result == false {
-		ctx.String(http.StatusOK, "user already exist, please try another username.")
+	if err != nil {
+		ctx.String(http.StatusOK, err.Error())
 	} else {
 		ctx.String(http.StatusOK, "user create successfully")
 	}
