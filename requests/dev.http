@@ -1,0 +1,51 @@
+### variable definitions
+@username = "test_user"
+@initial_password = "test_password"
+@new_password = "new_password"
+
+
+
+
+### health check
+GET http://localhost:3000/health_check
+
+### sign up
+POST http://localhost:3000/api/sign_up
+Content-Type: application/json
+
+{
+    "username": {{username}},
+    "password": {{initial_password}}
+}
+
+### auth
+# @name auth
+POST http://localhost:3000/api/auth
+Content-Type: application/json
+
+{
+    "username": {{username}},
+    "password": {{initial_password}}
+}
+
+###
+
+@token = "{{auth.response.body.$.token}}"
+
+### validate token
+POST http://localhost:3000/api/validate_token
+Content-Type: application/json
+
+{
+    "token": {{token}}
+}
+
+### change password
+POST http://localhost:3000/api/change_password
+Content-Type: application/json
+
+{
+    "username": {{username}},
+    "current_password": {{initial_password}},
+    "desired_password": {{new_password}}
+}

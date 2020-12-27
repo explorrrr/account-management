@@ -86,8 +86,6 @@ func(us *UserService) ChangePassword(ctx context.Context, username string, curre
 
 	userEntity, err = userEntity.ChangePassword(currentPassword, desiredPassword)
 
-	println(err)
-
 	if err != nil {
 		return false, "9999", err
 	}
