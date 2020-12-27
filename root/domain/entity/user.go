@@ -28,6 +28,10 @@ func ValidateInputPassword(raw_password string) (bool, error) {
 }
 
 func ValidateInputUsername(username string) (bool, error) {
+	if len(username) < 6 {
+		return false, errors.New("Username must be at least 6 characters")
+	}
+
 	if len(username) > 64 {
 		return false, errors.New("Username must be 64 characters or less")
 	}
