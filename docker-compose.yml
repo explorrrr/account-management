@@ -9,11 +9,10 @@ services:
     # env_file:
     #   - root/config/credentials.env
     volumes:
-      - ./:/usr/local/go/src/account-management
+      - ./:/go/src/account-management
     container_name: account-management-api
     ports:
       - 3000:3000
-      - 2345:2345
     security_opt:
       - apparmor:unconfined
     cap_add:

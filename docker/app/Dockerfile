@@ -1,6 +1,6 @@
 FROM golang:1.15.2-alpine3.12 as build
 
-WORKDIR /usr/local/go/src/account-management/root
+WORKDIR /go/src/account-management/root
 
 COPY ./root .
 
@@ -9,12 +9,13 @@ COPY ./root .
 # RUN export AWS_DEFAULT_REGION=$REGION
 
 ENV GO111MODULE=on
+ENV CGO_ENABLED=0
 
 # cosmtrek/airのインストール
 RUN go get -u github.com/cosmtrek/air
-# delveのインストール
-RUN go get -u github.com/go-delve/delve/cmd/dlv
 RUN go get golang.org/x/tools/gopls
+
+RUN go mod download
 
 CMD air -c air.toml
 

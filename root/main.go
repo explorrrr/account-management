@@ -4,7 +4,6 @@ import (
 	"fmt"
 	"flag"
 	"os"
-
 	"account-management/root/server"
 	"account-management/root/config"
 )

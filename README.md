@@ -33,5 +33,6 @@ docker-compose up -d --build
 
 ### テスト実行
 ```
-go test -v test/...
+cd root
+go test test/...
 ```
